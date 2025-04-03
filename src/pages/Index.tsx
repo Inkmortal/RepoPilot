@@ -2,7 +2,6 @@
 import React from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import FileExplorer from '@/components/file-explorer/FileExplorer';
-import CodeViewer from '@/components/code-viewer/CodeViewer';
 import PromptBuilder from '@/components/prompt-builder/PromptBuilder';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import SelectedFiles from '@/components/file-explorer/SelectedFiles';
@@ -25,20 +24,14 @@ const Index = () => {
           
           <ResizablePanel defaultSize={75}>
             <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={30} minSize={20}>
+              <ResizablePanel defaultSize={40} minSize={30}>
                 <PromptBuilder />
               </ResizablePanel>
               
               <ResizableHandle />
               
-              <ResizablePanel defaultSize={35} minSize={25}>
+              <ResizablePanel defaultSize={60} minSize={30}>
                 <SelectedFiles />
-              </ResizablePanel>
-              
-              <ResizableHandle />
-              
-              <ResizablePanel defaultSize={35} minSize={25}>
-                <CodeViewer />
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
