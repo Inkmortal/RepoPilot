@@ -1,7 +1,6 @@
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { mockFileStructure } from './mockData';
+import { useRepositoryStore } from '@/store/repositoryStore';
 import { countSelectedFiles } from './utils';
 import { FileItem } from './types';
 import { Badge } from '@/components/ui/badge';
@@ -10,39 +9,40 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import FilePreviewModal from './FilePreviewModal';
 
 const SelectedFiles: React.FC = () => {
-  // In a real app, this would be connected to the actual file selection state
-  const [fileStructure] = useState<FileItem[]>(mockFileStructure);
+  // Get file structure from store
+  const fileStructure = useRepositoryStore((state) => state.fileStructure);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [previewFile, setPreviewFile] = useState<{ name: string, content: string } | null>(null);
   
-  // Find all selected files
-  const getSelectedFiles = (items: FileItem[]): FileItem[] => {
-    let selected: FileItem[] = [];
-    
-    const findSelected = (fileItems: FileItem[]) => {
-      for (const item of fileItems) {
-        if (item.type === 'file' && item.selected) {
-          selected.push(item);
+  // Memoize the calculation of selected files
+  const selectedFiles = useMemo(() => {
+    const getSelected = (items: FileItem[]): FileItem[] => {
+      let selected: FileItem[] = [];
+      const findSelected = (fileItems: FileItem[]) => {
+        for (const item of fileItems) {
+          if (item.type === 'file' && item.selected) {
+            selected.push(item);
+          }
+          if (item.children) {
+            findSelected(item.children);
+          }
         }
-        if (item.children) {
-          findSelected(item.children);
-        }
-      }
+      };
+      findSelected(items);
+      return selected;
     };
-    
-    findSelected(items);
-    return selected;
-  };
-  
-  const selectedFiles = getSelectedFiles(fileStructure);
-  const selectedCount = countSelectedFiles(fileStructure);
+    return getSelected(fileStructure); // Calculate based on store data
+  }, [fileStructure]); // Recalculate only when fileStructure changes
+
+  const selectedCount = countSelectedFiles(fileStructure); // Count based on store data
   
   const handleFileClick = (file: FileItem) => {
     setSelectedFileId(file.id);
     
     // Mock content - in a real app, you would fetch the actual file content
-    const mockContent = `// ${file.name}\n\nfunction example() {\n  console.log("This is a mock content for ${file.name}");\n  return true;\n}\n\nexport default example;`;
+    // TODO: Implement actual file content fetching via IPC
+    const mockContent = `// Mock content for ${file.name}\n// Path: ${file.path}\n\nfunction placeholder() {\n  console.log("File content loading not implemented yet.");\n}`; 
     
     setPreviewFile({ 
       name: file.name, 

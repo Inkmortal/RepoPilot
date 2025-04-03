@@ -1,0 +1,46 @@
+# RepoPilot Project Intelligence & Patterns
+
+This file captures key patterns, decisions, and learnings discovered during the development of RepoPilot.
+
+## Patterns
+
+*   **Electron IPC (handle/invoke):** For request/response communication between Renderer and Main processes, use `ipcMain.handle` in Main and `ipcRenderer.invoke` (via a preload-exposed function) in Renderer. This is suitable for operations where the Renderer needs data from the Main process (e.g., reading file structure).
+    *   **Channel Naming:** Use a clear prefix like `ipc-feature-name:` (e.g., `ipc-file-system:open-dialog`).
+    *   **Preload Exposure:** Expose specific functions via `contextBridge.exposeInMainWorld('electronAPI', { functionName: () => ipcRenderer.invoke(...) });`. Define the `Window.electronAPI` type in the Renderer code using `declare global`. 
+*   **State Management (Zustand):** Use Zustand for managing global state needed across different component trees (e.g., loaded repository data shared between `Header` and `FileExplorer`). Define actions within the store to encapsulate state mutations.
+*   **File System Interaction:** Keep direct Node.js `fs` module usage confined to the Electron Main process (`electron/main/`). Access file system data from the Renderer only via IPC calls.
+*   **Type Synchronization (Manual):** Currently, type definitions shared between Main and Renderer (like `FileItem`) are manually kept in sync. *Consider automating this or creating a shared types package if complexity increases.*
+*   **Build Process (Vite + Electron):** Leverage `vite-plugin-electron` and `vite-plugin-electron-renderer`. 
+    *   **Preload Script Build:** Explicit configuration is crucial for preload scripts. They must be built as CommonJS (`format: 'cjs'`). If issues persist (like preload code being output as ESM despite `format: 'cjs'`), explicitly target Node.js within the preload's nested Vite build config: 
+        ```js
+        // vite.config.ts (within electron plugin array for preload entry)
+        vite: {
+          build: {
+            // ... other options like outDir, rollupOptions ...
+            format: 'cjs',
+            target: 'node18', // Or relevant Node version
+            lib: { entry: 'electron/preload/index.ts', formats: ['cjs'] },
+            emptyOutDir: false, 
+          },
+        }
+        ```
+    *   **Build Cache:** Issues with build output format (e.g., ESM instead of CJS) might be due to stale caches (`dist*`, `node_modules/.vite`). Clear these directories and reinstall dependencies (`npm install`/`bun install`) when troubleshooting build output problems.
+*   **Configuration:** Store Electron Builder configuration directly within `package.json` under the `build` key.
+
+## Decisions
+
+*   Chose Electron over Web Platform APIs for native file system access and dialogs.
+*   Adopted Zustand for global state management early on.
+*   Used synchronous file system calls (`readdirSync`, `statSync`) in the initial implementation for simplicity. Will monitor performance and refactor to async if needed.
+
+## User Preferences/Workflow
+
+*   Prefers implementing backend functionality alongside frontend work rather than relying solely on mock data initially (as demonstrated in the repository loading feature).
+*   Requires explicit approval before code edits are made.
+*   Values documentation and clear tracking of project state (Memory Bank).
+
+## Known Challenges
+
+*   TypeScript configuration (`tsconfig.json`, `tsconfig.node.json`) involving project references and Electron integration can be complex.
+*   ~~Vite/Electron preload script format issues: Resolved by explicitly targeting Node in vite.config.ts and clearing caches.~~
+ 

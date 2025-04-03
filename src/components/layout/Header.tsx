@@ -1,18 +1,71 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Folder, Settings, HelpCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useRepositoryStore } from '@/store/repositoryStore';
+
+// Define the type for the exposed Electron API
+declare global {
+  interface Window {
+    electronAPI: {
+      openDirectoryDialog: () => Promise<{ canceled?: boolean; path?: string; structure?: any[]; error?: string }>;
+    }
+  }
+}
 
 const Header: React.FC = () => {
   const { toast } = useToast();
+  const loadRepository = useRepositoryStore((state) => state.loadRepository);
   
-  const handleOpenRepo = () => {
-    toast({
-      title: "Feature in development",
-      description: "Opening repositories will be available in the next version.",
-    });
+  const handleOpenRepo = async () => {
+    if (window.electronAPI) {
+      try {
+        const result = await window.electronAPI.openDirectoryDialog();
+        if (result.canceled) {
+          console.log('Directory selection canceled.');
+          return;
+        }
+        if (result.error) {
+          console.error('Error opening directory:', result.error);
+          toast({
+            variant: "destructive",
+            title: "Error Opening Directory",
+            description: result.error,
+          });
+          return;
+        }
+        if (result.path && result.structure) {
+          loadRepository(result.path, result.structure);
+          toast({
+            title: "Repository Loaded",
+            description: `Loaded repository from: ${result.path}`,
+          });
+        } else {
+          // Handle unexpected case where result is neither canceled nor has path/structure
+           console.error('Unexpected result from openDirectoryDialog:', result);
+            toast({
+                variant: "destructive",
+                title: "Error Loading Repository",
+                description: "Received an unexpected response after selecting directory.",
+            });
+        }
+      } catch (error: any) {
+        console.error('Failed to invoke directory dialog:', error);
+        toast({
+          variant: "destructive",
+          title: "IPC Error",
+          description: error.message || "Failed to communicate with the main process.",
+        });
+      }
+    } else {
+      console.error('Electron API not available. Ensure preload script is loaded.');
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Electron functionality is not available.",
+      });
+    }
   };
 
   return (

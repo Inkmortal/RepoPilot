@@ -1,52 +1,28 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { FileItem } from './types';
-import { mockFileStructure } from './mockData';
-import { countSelectedFiles } from './utils';
+import { useRepositoryStore } from '@/store/repositoryStore'; // Import Zustand store
+// import { FileItem } from './types'; // Type is likely defined in store now or shared
+// import { mockFileStructure } from './mockData'; // Remove mock data import
+import { countSelectedFiles } from './utils'; // Keep utils if still needed
 import FileTree from './FileTree';
 import FileExplorerHeader from './FileExplorerHeader';
 
 const FileExplorer: React.FC = () => {
-  const [fileStructure, setFileStructure] = useState<FileItem[]>(mockFileStructure);
+  // Get state and actions from Zustand store
+  const fileStructure = useRepositoryStore((state) => state.fileStructure);
+  const toggleItemExpansion = useRepositoryStore((state) => state.toggleItemExpansion);
+  const toggleItemSelection = useRepositoryStore((state) => state.toggleItemSelection);
+
+  // const [fileStructure, setFileStructure] = useState<FileItem[]>(mockFileStructure); // Remove local state
   const [searchTerm, setSearchTerm] = useState('');
   
-  const toggleExpand = (id: string) => {
-    setFileStructure(prevStructure => {
-      const updateNode = (items: FileItem[]): FileItem[] => {
-        return items.map(item => {
-          if (item.id === id) {
-            return { ...item, expanded: !item.expanded };
-          }
-          if (item.children) {
-            return { ...item, children: updateNode(item.children) };
-          }
-          return item;
-        });
-      };
-      
-      return updateNode(prevStructure);
-    });
-  };
+  // Remove local toggleExpand function, use store action instead
+  // const toggleExpand = (id: string) => { ... };
 
-  const toggleSelect = (id: string) => {
-    setFileStructure(prevStructure => {
-      const updateNode = (items: FileItem[]): FileItem[] => {
-        return items.map(item => {
-          if (item.id === id) {
-            return { ...item, selected: !item.selected };
-          }
-          if (item.children) {
-            return { ...item, children: updateNode(item.children) };
-          }
-          return item;
-        });
-      };
-      
-      return updateNode(prevStructure);
-    });
-  };
+  // Remove local toggleSelect function, use store action instead
+  // const toggleSelect = (id: string) => { ... };
 
+  // Calculate selected files based on store state
   const selectedFiles = countSelectedFiles(fileStructure);
   
   return (
@@ -59,10 +35,10 @@ const FileExplorer: React.FC = () => {
       <CardContent className="p-0 overflow-auto">
         <div className="min-h-[200px] max-h-[calc(100vh-15rem)] overflow-y-auto">
           <FileTree
-            items={fileStructure}
+            items={fileStructure} // Use fileStructure from store
             searchTerm={searchTerm}
-            toggleExpand={toggleExpand}
-            toggleSelect={toggleSelect}
+            toggleExpand={toggleItemExpansion} // Pass store action
+            toggleSelect={toggleItemSelection} // Pass store action
           />
         </div>
       </CardContent>

@@ -22,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Electron build output
+/dist-electron
+/release
+/node_modules/.cache/electron
+/node_modules/.cache/electron-builder
+
+# Misc
+*.pem
+*.p12
