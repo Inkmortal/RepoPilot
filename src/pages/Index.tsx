@@ -5,9 +5,7 @@ import FileExplorer from '@/components/file-explorer/FileExplorer';
 import CodeViewer from '@/components/code-viewer/CodeViewer';
 import PromptBuilder from '@/components/prompt-builder/PromptBuilder';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Code, Terminal, Settings } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import SelectedFiles from '@/components/file-explorer/SelectedFiles';
 
 const Index = () => {
   return (
@@ -27,14 +25,20 @@ const Index = () => {
           
           <ResizablePanel defaultSize={75}>
             <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={60} minSize={30}>
-                <CodeViewer />
+              <ResizablePanel defaultSize={30} minSize={20}>
+                <PromptBuilder />
               </ResizablePanel>
               
               <ResizableHandle />
               
-              <ResizablePanel defaultSize={40}>
-                <PromptBuilder />
+              <ResizablePanel defaultSize={35} minSize={25}>
+                <SelectedFiles />
+              </ResizablePanel>
+              
+              <ResizableHandle />
+              
+              <ResizablePanel defaultSize={35} minSize={25}>
+                <CodeViewer />
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>

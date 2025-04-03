@@ -1,13 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Copy, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const CodeViewer: React.FC = () => {
   const { toast } = useToast();
+  const [fileName, setFileName] = useState("App.tsx"); // In a real app, this would be dynamic
   
   const handleCopyCode = () => {
     toast({
@@ -23,7 +25,7 @@ const CodeViewer: React.FC = () => {
     });
   };
   
-  // Mock code content
+  // Mock code content - in a real app, this would be loaded dynamically
   const codeContent = `import React, { useState } from 'react';
 import { Button } from './components/Button';
 
@@ -49,15 +51,19 @@ function App() {
 
 export default App;`;
 
+  // Calculate approximate token count
+  const tokenCount = Math.floor(codeContent.split(/\s+/).length * 1.3);
+  const fileSize = "4.2KB"; // In a real app, this would be calculated
+
   return (
     <Card className="h-full">
       <CardHeader className="py-3 px-4 flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-lg">App.tsx</CardTitle>
+          <CardTitle className="text-lg">File Preview</CardTitle>
           <div className="flex items-center mt-1">
+            <Badge variant="outline" className="text-xs mr-2">{fileName}</Badge>
             <Badge variant="outline" className="text-xs mr-2">TypeScript</Badge>
-            <Badge variant="outline" className="text-xs mr-2">React</Badge>
-            <span className="text-xs text-muted-foreground">4.2KB</span>
+            <span className="text-xs text-muted-foreground">{fileSize}</span>
           </div>
         </div>
         <div className="flex space-x-2">
@@ -83,12 +89,14 @@ export default App;`;
       </CardHeader>
       <CardContent className="p-0">
         <div className="relative">
-          <pre className="code-editor text-sm p-4 bg-muted/50 overflow-auto max-h-[calc(100vh-22rem)]">
-            <code>{codeContent}</code>
-          </pre>
+          <ScrollArea className="h-[calc(100vh-22rem)]">
+            <pre className="code-editor text-sm p-4 bg-muted/50">
+              <code>{codeContent}</code>
+            </pre>
+          </ScrollArea>
           <div className="absolute bottom-2 right-2">
             <Badge variant="secondary" className="text-xs">
-              ~240 tokens
+              ~{tokenCount} tokens
             </Badge>
           </div>
         </div>
