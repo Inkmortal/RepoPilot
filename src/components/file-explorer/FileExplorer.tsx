@@ -8,8 +8,18 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 
-// Mock file structure data
-const mockFileStructure = [
+interface FileItem {
+  id: string;
+  name: string;
+  type: 'file' | 'folder';
+  size?: string;
+  selected?: boolean;
+  expanded?: boolean;
+  children?: FileItem[];
+}
+
+// Mock file structure data with proper typing
+const mockFileStructure: FileItem[] = [
   {
     id: '1',
     name: 'src',
@@ -51,16 +61,6 @@ const mockFileStructure = [
     ]
   }
 ];
-
-interface FileItem {
-  id: string;
-  name: string;
-  type: 'file' | 'folder';
-  size?: string;
-  selected?: boolean;
-  expanded?: boolean;
-  children?: FileItem[];
-}
 
 const FileExplorer: React.FC = () => {
   const [fileStructure, setFileStructure] = useState<FileItem[]>(mockFileStructure);
