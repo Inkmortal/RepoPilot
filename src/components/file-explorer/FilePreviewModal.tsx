@@ -1,24 +1,25 @@
 
 import React from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Copy, Download, X } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import { getFileIcon } from './utils';
+import { Button } from '@/components/ui/button';
+import { Copy, Download, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 
 interface FilePreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   fileName: string;
   content: string;
+  tokenCount?: number;
 }
 
 const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
@@ -26,83 +27,62 @@ const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   onClose,
   fileName,
   content,
+  tokenCount
 }) => {
   const { toast } = useToast();
   
-  // Calculate approximate token count
-  const tokenCount = Math.floor(content.split(/\s+/).length * 1.3);
-  const fileSize = `${(content.length / 1024).toFixed(1)}KB`;
-  
-  const handleCopyCode = () => {
+  const handleCopy = () => {
     navigator.clipboard.writeText(content);
     toast({
-      title: "Code copied",
-      description: "The code has been copied to your clipboard.",
+      title: "Content copied",
+      description: "File content has been copied to clipboard.",
     });
   };
   
   const handleDownload = () => {
-    toast({
-      title: "Feature in development",
-      description: "Downloading files will be available in the next version.",
-    });
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   };
-
+  
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
-        <DialogHeader className="flex flex-row items-center justify-between">
-          <div>
-            <DialogTitle className="flex items-center gap-2">
-              {getFileIcon(fileName)}
-              <span>{fileName}</span>
-            </DialogTitle>
-            <div className="flex items-center mt-1">
-              <Badge variant="outline" className="text-xs mr-2">
-                {fileName.split('.').pop()?.toUpperCase()}
-              </Badge>
-              <span className="text-xs text-muted-foreground">{fileSize}</span>
-            </div>
+        <DialogHeader className="flex justify-between items-center flex-row">
+          <div className="flex items-center gap-3">
+            <DialogTitle>{fileName}</DialogTitle>
+            {tokenCount && (
+              <Badge variant="secondary">~{tokenCount.toLocaleString()} tokens</Badge>
+            )}
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-8"
-              onClick={handleCopyCode}
-            >
-              <Copy className="h-3.5 w-3.5 mr-1" />
-              Copy
+            <Button variant="ghost" size="icon" onClick={handleCopy}>
+              <Copy className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-8"
-              onClick={handleDownload}
-            >
-              <Download className="h-3.5 w-3.5 mr-1" />
-              Download
+            <Button variant="ghost" size="icon" onClick={handleDownload}>
+              <Download className="h-4 w-4" />
             </Button>
             <DialogClose asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button variant="ghost" size="icon">
                 <X className="h-4 w-4" />
               </Button>
             </DialogClose>
           </div>
         </DialogHeader>
         
-        <div className="relative flex-1 mt-4">
-          <ScrollArea className="h-full border rounded-md bg-muted/50">
-            <pre className="p-4 text-sm">
-              <code>{content}</code>
-            </pre>
-          </ScrollArea>
-          <div className="absolute bottom-2 right-2">
-            <Badge variant="secondary" className="text-xs">
-              ~{tokenCount} tokens
-            </Badge>
-          </div>
-        </div>
+        <ScrollArea className="flex-1 border rounded-md bg-muted/10 p-3">
+          <pre className="text-sm font-mono whitespace-pre-wrap">{content}</pre>
+        </ScrollArea>
+        
+        <DialogFooter className="pt-4">
+          <Button variant="outline" onClick={onClose}>Close</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

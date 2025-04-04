@@ -1,3 +1,4 @@
+
 export interface FileItem {
   id: string;
   name: string;
@@ -7,4 +8,6 @@ export interface FileItem {
   selected?: boolean;
   expanded?: boolean;
   children?: FileItem[];
+  tokenCount?: number;
+  tokenPercentage?: number;
 }

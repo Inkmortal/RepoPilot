@@ -1,25 +1,23 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, Download, RefreshCw } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Copy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
+import PromptTabs, { PromptTabType } from './PromptTabs';
+import PromptOptions from './PromptOptions';
+import StoredPrompts from './StoredPrompts';
 
 const PromptBuilder: React.FC = () => {
   const { toast } = useToast();
   const [promptText, setPromptText] = useState('');
+  const [activeTab, setActiveTab] = useState<PromptTabType>('instructions');
+  const [includeCodeMap, setIncludeCodeMap] = useState(false);
+  const [editPromptType, setEditPromptType] = useState<'none' | 'diff' | 'full'>('none');
   
-  const handleGeneratePrompt = () => {
-    // In a real app, this would generate a prompt from the selected files
-    setPromptText(`Here is my codebase. Please help me understand it and suggest improvements:\n\n[Selected files will be inserted here automatically]`);
-    
-    toast({
-      title: "Prompt generated",
-      description: "The prompt has been generated with selected files.",
-    });
-  };
+  // Calculate approximate token count
+  const tokenCount = Math.floor(promptText.split(/\s+/).length * 1.3);
   
   const handleCopyPrompt = () => {
     if (promptText) {
@@ -31,76 +29,48 @@ const PromptBuilder: React.FC = () => {
     } else {
       toast({
         title: "No prompt to copy",
-        description: "Generate a prompt first before copying.",
+        description: "Write a prompt first before copying.",
         variant: "destructive",
       });
     }
   };
   
-  const handleDownload = () => {
+  const handleSelectStoredPrompt = (text: string) => {
+    setPromptText(text);
     toast({
-      title: "Feature in development",
-      description: "Downloading prompts will be available in the next version.",
+      title: "Prompt loaded",
+      description: "The saved prompt has been loaded into the editor.",
     });
   };
-  
-  // Calculate approximate token count
-  const tokenCount = Math.floor(promptText.split(/\s+/).length * 1.3);
-  
+
   return (
-    <Card className="h-full">
-      <CardHeader className="py-3 px-4 flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-lg">Prompt Builder</CardTitle>
-          {promptText && (
-            <div className="flex items-center mt-1">
-              <Badge variant="secondary" className="text-xs">
-                ~{tokenCount} tokens
-              </Badge>
-            </div>
-          )}
-        </div>
-        <div className="flex items-center space-x-2">  
-          <Button 
-            variant="default" 
-            size="sm" 
-            className="h-8"
-            onClick={handleGeneratePrompt}
-          >
-            <RefreshCw className="h-3.5 w-3.5 mr-1" />
-            Generate
-          </Button>
+    <Card className="h-full bg-background">
+      <CardContent className="p-0 flex flex-col h-full">
+        <div className="p-2 flex items-center justify-between">
+          <PromptTabs activeTab={activeTab} onTabChange={setActiveTab} />
           
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="h-8"
-            onClick={handleCopyPrompt}
-            disabled={!promptText}
-          >
-            <Copy className="h-3.5 w-3.5 mr-1" />
-            Copy
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="h-8"
-            onClick={handleDownload}
-            disabled={!promptText}
-          >
-            <Download className="h-3.5 w-3.5 mr-1" />
-            Save
-          </Button>
+          <div className="flex items-center">
+            <StoredPrompts onSelectPrompt={handleSelectStoredPrompt} />
+          </div>
         </div>
-      </CardHeader>
-      <CardContent className="p-4 pt-2">
-        <Textarea
-          placeholder="Write your prompt here, or click 'Generate' to create a prompt from selected files..."
-          className="min-h-[100px] w-full resize-none"
-          value={promptText}
-          onChange={(e) => setPromptText(e.target.value)}
-        />
+        
+        <div className="px-4">
+          <PromptOptions 
+            includeCodeMap={includeCodeMap}
+            setIncludeCodeMap={setIncludeCodeMap}
+            editPromptType={editPromptType}
+            setEditPromptType={setEditPromptType}
+          />
+        </div>
+        
+        <div className="flex-1 px-4 pb-4 min-h-0">
+          <Textarea
+            placeholder="Enter your instructions here..."
+            className="h-full min-h-[100px] w-full resize-none bg-muted/20"
+            value={promptText}
+            onChange={(e) => setPromptText(e.target.value)}
+          />
+        </div>
       </CardContent>
     </Card>
   );
