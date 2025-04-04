@@ -32,3 +32,9 @@ dist-ssr
 # Misc
 *.pem
 *.p12
+
+# Dependency directories
+node_modules/
+
+# Lockfiles (Standardize on package-lock.json)
+/bun.lockb
