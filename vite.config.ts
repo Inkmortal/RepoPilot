@@ -8,14 +8,15 @@ import { rmSync } from 'node:fs';
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, mode }) => {
+export default defineConfig((configEnv) => {
+  const { command, mode } = configEnv;
   rmSync('dist-electron', { recursive: true, force: true });
 
   const isServe = command === 'serve';
   const isBuild = command === 'build';
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
 
-  return {
+  const config = {
     server: {
       host: "::",
       port: 8080,
@@ -75,4 +76,6 @@ export default defineConfig(({ command, mode }) => {
     },
     clearScreen: false,
   };
-}) as import('vite').UserConfig; // Adding explicit type assertion to help TypeScript
+
+  return config;
+});
