@@ -75,4 +75,4 @@ export default defineConfig(({ command, mode }) => {
     },
     clearScreen: false,
   };
-}) as import('vite').UserConfig; // Add type assertion here to help TypeScript understand the return type
+}) as import('vite').UserConfig; // Adding explicit type assertion to help TypeScript
