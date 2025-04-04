@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   FileIcon, 
-  SortIcon, 
+  ArrowUpDown,
   FilterIcon, 
   XIcon, 
   RefreshCw 
@@ -35,7 +34,7 @@ const FileExplorerToolbar: React.FC<FileExplorerToolbarProps> = ({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="flex items-center gap-1">
-            <SortIcon className="h-3 w-3" />
+            <ArrowUpDown className="h-3 w-3" />
             <span>Sort</span>
           </Button>
         </DropdownMenuTrigger>

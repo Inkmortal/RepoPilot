@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { SortIcon, LayoutList, LayoutGrid, FolderTree } from 'lucide-react';
+import { ArrowUpDown, LayoutList, LayoutGrid, FolderTree } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -37,7 +36,7 @@ const SelectedFilesHeader: React.FC<SelectedFilesHeaderProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-7 w-7">
-              <SortIcon className="h-3.5 w-3.5" />
+              <ArrowUpDown className="h-3.5 w-3.5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
