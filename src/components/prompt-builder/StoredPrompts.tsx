@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -18,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 interface StoredPromptsProps {
-  onSelectPrompt: (promptText: string) => void;
+  onSelectPrompt: (promptTitle: string) => void;
 }
 
 interface SavedPrompt {
@@ -54,7 +53,7 @@ const StoredPrompts: React.FC<StoredPromptsProps> = ({ onSelectPrompt }) => {
           {SAMPLE_PROMPTS.map(prompt => (
             <DropdownMenuItem 
               key={prompt.id}
-              onClick={() => onSelectPrompt(prompt.content)}
+              onClick={() => onSelectPrompt(prompt.title)}
             >
               {prompt.title}
             </DropdownMenuItem>

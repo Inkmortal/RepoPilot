@@ -26,14 +26,10 @@ const FileExplorerToolbar: React.FC<FileExplorerToolbarProps> = ({
   onFilterChange
 }) => {
   return (
-    <div className="flex items-center gap-2 p-2 border-b border-border">
-      <Button variant="ghost" size="sm" className="px-2">
-        <FileIcon className="h-4 w-4" />
-      </Button>
-      
+    <div className="flex flex-wrap items-center sm:gap-2 gap-1 border-b border-border">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="flex items-center gap-1">
+          <Button variant="outline" size="sm" className="flex items-center gap-1 text-xs py-0.5 px-1.5 h-6">
             <ArrowUpDown className="h-3 w-3" />
             <span>Sort</span>
           </Button>
@@ -47,7 +43,7 @@ const FileExplorerToolbar: React.FC<FileExplorerToolbarProps> = ({
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="flex items-center gap-1">
+          <Button variant="outline" size="sm" className="flex items-center gap-1 text-xs py-0.5 px-1.5 h-6">
             <FilterIcon className="h-3 w-3" />
             <span>Filters</span>
           </Button>
@@ -60,12 +56,12 @@ const FileExplorerToolbar: React.FC<FileExplorerToolbarProps> = ({
         </DropdownMenuContent>
       </DropdownMenu>
       
-      <Button variant="outline" size="sm" onClick={onClearSelection}>
+      <Button variant="outline" size="sm" className="text-xs py-0.5 px-1.5 h-6" onClick={onClearSelection}>
         Clear
       </Button>
       
-      <Button variant="ghost" size="icon" className="ml-1">
-        <RefreshCw className="h-4 w-4" />
+      <Button variant="ghost" size="icon" className="ml-1 h-6 w-6">
+        <RefreshCw className="h-3.5 w-3.5" />
       </Button>
     </div>
   );

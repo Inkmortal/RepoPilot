@@ -82,10 +82,7 @@ const SelectedFilesHeader: React.FC<SelectedFilesHeaderProps> = ({
           ~{totalTokens.toLocaleString()} tokens
         </Badge>
         <Badge variant="outline" className="text-xs bg-transparent">
-          {apiCalls} API calls
-        </Badge>
-        <Badge variant="outline" className="text-xs bg-transparent">
-          ~{apiTokens.toLocaleString()} tokens
+          {apiCalls} File APIs
         </Badge>
       </div>
     </div>

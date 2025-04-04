@@ -3,7 +3,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useRepositoryStore } from '@/store/repositoryStore';
 import { countSelectedFiles } from './utils';
 import FileTree from './FileTree';
-import FileExplorerHeader from './FileExplorerHeader';
 import FileExplorerToolbar from './FileExplorerToolbar';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -87,33 +86,40 @@ const FileExplorer: React.FC = () => {
   // Calculate selected files based on store state
   const selectedFiles = countSelectedFiles(fileStructure);
   
+  // Ref height calculation based on combined header height (approx 60px)
+  const headerHeight = '60px'; // Adjust if needed after testing
+  
   return (
-    <Card className="h-full">
-      <FileExplorerToolbar
-        onClearSelection={clearAllSelections}
-        onSortChange={setSortBy}
-        onFilterChange={setFilterBy}
-      />
-      <div className="px-2 py-1.5">
-        <div className="relative">
-          <Search className="absolute left-2 top-2 h-4 w-4 text-muted-foreground" />
+    <Card className="h-full flex flex-col">
+      {/* Combined Header Section */}
+      <div className="px-2 py-1.5 flex-shrink-0">
+        {/* Toolbar - note: border-b is now on the input wrapper below */}
+        <FileExplorerToolbar
+          onClearSelection={clearAllSelections}
+          onSortChange={setSortBy}
+          onFilterChange={setFilterBy}
+        />
+        {/* Search Input - with border-b to replace the one removed from toolbar div */}
+        <div className="relative mt-1.5 border-b border-border pb-1.5">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search files"
-            className="pl-8 h-8"
+            // Smaller input: pl-8, h-7
+            className="pl-8 h-7 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
-      <CardContent className="p-0 overflow-auto h-[calc(100%-82px)]">
-        <div className="min-h-[200px] max-h-[calc(100vh-15rem)] overflow-y-auto">
-          <FileTree
-            items={filteredFiles}
-            searchTerm=""
-            toggleExpand={toggleItemExpansion}
-            toggleSelect={toggleItemSelection}
-          />
-        </div>
+      
+      {/* Scrollable File Tree Area */}
+      <CardContent className="p-0 overflow-auto flex-grow">
+        <FileTree
+          items={filteredFiles}
+          searchTerm=""
+          toggleExpand={toggleItemExpansion}
+          toggleSelect={toggleItemSelection}
+        />
       </CardContent>
     </Card>
   );

@@ -7,6 +7,7 @@ interface RepositoryState {
   loadRepository: (path: string, structure: FileItem[]) => void;
   toggleItemExpansion: (itemId: string) => void;
   toggleItemSelection: (itemId: string) => void;
+  clearAllSelections: () => void;
   // Add other actions as needed (e.g., search, filter)
 }
 
@@ -36,6 +37,17 @@ const updateSelection = (items: FileItem[], itemId: string): FileItem[] => {
   });
 };
 
+// Helper function to recursively clear all selections
+const clearSelectionsRecursive = (items: FileItem[]): FileItem[] => {
+  return items.map(item => {
+    const newItem = { ...item, selected: false };
+    if (newItem.children) {
+      newItem.children = clearSelectionsRecursive(newItem.children);
+    }
+    return newItem;
+  });
+};
+
 export const useRepositoryStore = create<RepositoryState>((set) => ({
   repositoryPath: null,
   fileStructure: [],
@@ -45,5 +57,8 @@ export const useRepositoryStore = create<RepositoryState>((set) => ({
   })),
   toggleItemSelection: (itemId) => set((state) => ({
     fileStructure: updateSelection(state.fileStructure, itemId)
+  })),
+  clearAllSelections: () => set((state) => ({
+    fileStructure: clearSelectionsRecursive(state.fileStructure)
   })),
 })); 
