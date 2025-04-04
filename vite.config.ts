@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -74,4 +75,4 @@ export default defineConfig(({ command, mode }) => {
     },
     clearScreen: false,
   };
-});
+}) as import('vite').UserConfig; // Add type assertion here to help TypeScript understand the return type
